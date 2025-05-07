@@ -120,16 +120,17 @@ Color.prototype = {
 		return this[this.model]();
 	},
 
-	string(places) {
-		let self = this.model in colorString.to ? this : this.rgb();
-		self = self.round(typeof places === 'number' ? places : 1);
-		const arguments_ = self.valpha === 1 ? self.color : [...self.color, this.valpha];
+	string(precision) {
+		const self = this.model in colorString.to ? this : this.rgb();
+		const roundedColor = roundColor(self.color, precision);
+		const arguments_ = self.valpha === 1 ? roundedColor : [...roundedColor, this.valpha];
 		return colorString.to[self.model](...arguments_);
 	},
 
-	percentString(places) {
-		const self = this.rgb().round(typeof places === 'number' ? places : 1);
-		const arguments_ = self.valpha === 1 ? self.color : [...self.color, this.valpha];
+	percentString(precision) {
+		const self = this.rgb();
+		const roundedColor = roundColor(self.color, precision);
+		const arguments_ = self.valpha === 1 ? roundedColor : [...roundedColor, this.valpha];
 		return colorString.to.rgb.percent(...arguments_);
 	},
 
@@ -177,11 +178,6 @@ Color.prototype = {
 		}
 
 		return rgb;
-	},
-
-	round(places) {
-		places = Math.max(places || 0, 0);
-		return new Color([...this.color.map(roundToPlace(places)), this.valpha], this.model);
 	},
 
 	alpha(value) {
@@ -237,7 +233,7 @@ Color.prototype = {
 			return new Color(value);
 		}
 
-		return colorString.to.hex(...this.rgb().round().color);
+		return colorString.to.hex(...this.rgb().color);
 	},
 
 	hexa(value) {
@@ -245,7 +241,7 @@ Color.prototype = {
 			return new Color(value);
 		}
 
-		const rgbArray = this.rgb().round().color;
+		const rgbArray = this.rgb().color;
 
 		let alphaHex = Math.round(this.valpha * 255).toString(16).toUpperCase();
 		if (alphaHex.length === 1) {
@@ -432,14 +428,11 @@ for (const model of Object.keys(convert)) {
 	};
 }
 
-function roundTo(number, places) {
-	return Number(number.toFixed(places));
-}
-
-function roundToPlace(places) {
-	return function (number) {
-		return roundTo(number, places);
-	};
+function roundColor(colorArray, precision) {
+	return colorArray.map(unroundedArgument => {
+		const rounded = unroundedArgument.toFixed(typeof precision === 'number' ? precision : 1);
+		return rounded.replace(/\.(\d*[1-9])?0+$/, (_, subgroup) => subgroup ? `.${subgroup}` : '');
+	});
 }
 
 function getset(model, channel, modifier) {

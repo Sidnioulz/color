@@ -307,32 +307,59 @@ it('Retain Alpha', () => {
 });
 
 it('Translations', () => {
-	deepEqual(Color.rgb(10, 30, 25).rgb().round().object(), {
+	deepEqual(Color.rgb(10, 30, 25).rgb().object(), {
 		r: 10,
 		g: 30,
 		b: 25,
 	});
-	deepEqual(Color.rgb(10, 30, 25).hsl().round().object(), {
+	deepEqual(Color.rgb(10, 30, 25).hsl().object(), {
 		h: 165,
 		s: 50,
-		l: 8,
+		l: 7.8431372549019605,
 	});
-	deepEqual(Color.rgb(10, 30, 25).hsv().round().object(), {
+	deepEqual(Color.rgb(10, 30, 25).hsv().object(), {
 		h: 165,
-		s: 67,
-		v: 12,
+		s: 66.66666666666666,
+		v: 11.76470588235294,
 	});
-	deepEqual(Color.rgb(10, 30, 25).hwb().round().object(), {
+	deepEqual(Color.rgb(10, 30, 25).hwb().object(), {
 		h: 165,
-		w: 4,
-		b: 88,
+		w: 3.9215686274509802,
+		b: 88.23529411764706,
 	});
-	deepEqual(Color.rgb(10, 30, 25).cmyk().round().object(), {
-		c: 67,
+	deepEqual(Color.rgb(10, 30, 25).cmyk().object(), {
+		c: 66.6666666666667,
 		m: 0,
-		y: 17,
-		k: 88,
+		y: 16.6666666666667,
+		k: 88.23529411764706,
 	});
+});
+
+it('Output to string (default rounding to 1)', () => {
+	deepEqual(Color.rgb(10, 30, 25).rgb().string(), 'rgb(10, 30, 25)');
+	deepEqual(Color.rgb(10, 30, 25).hsl().string(), 'hsl(165, 50%, 7.8%)');
+	deepEqual(Color.rgb(10, 30, 25).hwb().string(), 'hwb(165, 3.9%, 88.2%)');
+});
+
+it('Rounding to 0', () => {
+	deepEqual(Color.hsl(164.4992, 48.46, 7.99).hsl().string(0), 'hsl(164, 48%, 8%)');
+	deepEqual(Color.hsl(164.4992, 48.46, 7.99).hwb().string(0), 'hwb(164, 4%, 88%)');
+});
+
+it('Rounding to 1', () => {
+	deepEqual(Color.hsl(164.4992, 48.46, 7.99).hsl().string(1), 'hsl(164.5, 48.5%, 8%)');
+	deepEqual(Color.hsl(164.4992, 48.46, 7.99).hwb().string(1), 'hwb(164.5, 4.1%, 88.1%)');
+});
+
+it('Rounding to 2', () => {
+	deepEqual(Color.hsl(164.4992, 48.46, 7.99).hsl().string(2), 'hsl(164.5, 48.46%, 7.99%)');
+	deepEqual(Color.hsl(164.4992, 48.46, 7.99).hwb().string(2), 'hwb(164.5, 4.12%, 88.14%)');
+});
+
+it('Rounding to 3', () => {
+	deepEqual(Color.hsl(164.4992, 48.46, 7.99).hsl().string(3), 'hsl(164.499, 48.46%, 7.99%)');
+	deepEqual(Color.hsl(164.4992, 48.46, 7.99).hwb().string(3), 'hwb(164.499, 4.118%, 88.138%)');
+	deepEqual(Color.hsl(165, 50, 8).hwb().string(3), 'hwb(165, 4%, 88%)'); // No superfluous zeros.
 });
 
 it('Array getters', () => {
@@ -603,10 +630,10 @@ it('Translate with channel setters', () => {
 		r: 0,
 		g: 0,
 		b: 0,
-	}).red(50).green(50).hsv().round().object(), {
+	}).red(50).green(50).hsv().object(), {
 		h: 60,
 		s: 100,
-		v: 20,
+		v: 19.607843137254903,
 	});
 });
 
@@ -662,16 +689,16 @@ it('Manipulators wo/ mix', () => {
 		r: 67,
 		g: 122,
 		b: 134,
-	}).grayscale().rgb().round().object(), {
-		r: 107,
-		g: 107,
-		b: 107,
+	}).grayscale().rgb().object(), {
+		r: 106.81999999999998,
+		g: 106.81999999999998,
+		b: 106.81999999999998,
 	});
 	deepEqual(Color({
 		r: 67,
 		g: 122,
 		b: 134,
-	}).negate().rgb().round().object(), {
+	}).negate().rgb().object(), {
 		r: 188,
 		g: 133,
 		b: 121,
